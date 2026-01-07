@@ -1,0 +1,59 @@
+services:
+  backend_server:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sysmtr_server
+    command: /app/server
+    ports: 
+      - "${HTTP_PORT:-8080}:8080"
+      - "${GRPC_PORT:-50051}:50051"
+    environment:
+      - DB_HOST=postgres
+      - SERVER_ADDRESS=0.0.0.0:50051
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - GRPC_PORT=${GRPC_PORT}
+      - HTTP_PORT=${HTTP_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sysmtr_net
+
+  backend_agent:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sysmtr_agent
+    command: /app/agent
+    environment:
+      - SERVER_ADDRESS=backend_server:50051
+    networks:
+      - sysmtr_net
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: sysmtr_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sysmtr_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  sysmtr_net:

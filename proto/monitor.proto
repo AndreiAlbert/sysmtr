@@ -1,0 +1,17 @@
+syntax = "proto3";
+package monitor;
+
+option go_package = "github.com/AndreiAlbert/sysmnt/backend/pb";
+
+message SystemStats {
+  double cpu_usage = 1;
+  double ram_usage = 2;
+  string instance_id = 3;
+  string created_at = 4;
+}
+
+message Empty {}
+
+service MonitorService {
+  rpc PushStats (stream SystemStats) returns (Empty);
+}
