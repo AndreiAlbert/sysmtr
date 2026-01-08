@@ -35,9 +35,9 @@ func (h *StreamHub) run() {
 			}
 		case stats := <-h.broadcast:
 			jsonMsg, err := json.Marshal(map[string]any{
-				"cpuUsage":   stats.CpuUsage,
-				"ramUsage":   stats.RamUsage,
-				"instanceId": stats.InstanceId,
+				"cpu_usage":   stats.CpuUsage,
+				"ram_usage":   stats.RamUsage,
+				"instance_id": stats.InstanceId,
 			})
 			if err != nil {
 				log.Printf("failed to marshal stats: %v", err)
