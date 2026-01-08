@@ -1,21 +1,37 @@
-<div class="monitor-container">
-  <h2>System Monitoring Dashboard</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Instance ID</th>
-        <th>CPU Usage (%)</th>
-        <th>RAM Usage (%)</th>
-        <th>Time</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let stat of statsHistory">
-        <td>{{ stat.instance_id }}</td>
-        <td>{{ stat.cpu_usage | number:'1.2-2' }}%</td>
-        <td>{{ stat.ram_usage | number:'1.2-2' }}%</td>
-        <td>{{ stat.created_at || 'Just now' }}</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="dashboard-wrapper">
+  <header>
+    <h1>System Monitoring</h1>
+    <span class="status-badge" [class.live]="statsHistory.length > 0">
+      {{ statsHistory.length > 0 ? '● Live Feed' : 'Connecting...' }}
+    </span>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of statsHistory.slice(0, 10)">
+      <div class="card-header">
+        <span class="instance-id">{{ stat.instance_id }}</span>
+        <span class="timestamp">{{ stat.created_at }}</span>
+      </div>
+
+      <div class="metric">
+        <div class="metric-info">
+          <span>CPU Usage</span>
+          <span class="value">{{ stat.cpu_usage | number:'1.1-1' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="fill" [style.width.%]="stat.cpu_usage" [class.warning]="stat.cpu_usage > 70" [class.critical]="stat.cpu_usage > 90"></div>
+        </div>
+      </div>
+
+      <div class="metric">
+        <div class="metric-info">
+          <span>RAM Usage</span>
+          <span class="value">{{ stat.ram_usage | number:'1.1-1' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="fill" [style.width.%]="stat.ram_usage" [class.warning]="stat.ram_usage > 70" [class.critical]="stat.ram_usage > 90"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
