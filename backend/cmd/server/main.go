@@ -14,6 +14,15 @@ import (
 	"google.golang.org/grpc"
 )
 
+func enableCors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	cfg := config.LoadConfig()
 	hub := NewStreamHub()
@@ -35,11 +44,13 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		wsHandler(hub, w, r)
 	})
 
-	http.HandleFunc("/history", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/history", func(w http.ResponseWriter, r *http.Request) {
 		history, err := store.GetHistory(context.Background())
 		if err != nil {
 			fmt.Println("no mers")
@@ -52,5 +63,5 @@ func main() {
 	})
 
 	log.Printf("HTTP/Ws listening on :%s (Waiting for Browsers...)", cfg.HTTPPort)
-	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, nil))
+	log.Fatal(http.ListenAndServe(":"+cfg.HTTPPort, enableCors(mux)))
 }
