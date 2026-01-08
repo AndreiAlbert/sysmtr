@@ -26,13 +26,12 @@ func main() {
 		log.Fatalf("Error creating stream: %v", err)
 	}
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
 	for range ticker.C {
 		v, _ := mem.VirtualMemory()
 		c, _ := cpu.Percent(0, false)
-
 		stats := &pb.SystemStats{
 			CpuUsage:   c[0],
 			RamUsage:   v.UsedPercent,

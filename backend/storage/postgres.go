@@ -26,7 +26,7 @@ func NewPostgresStore(connStr string) (*PostgresStore, error) {
 		instance_id TEXT NOT NULL, 
 		cpu_usage FLOAT NOT NULL,
 		ram_usage FLOAT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		created_at TIMESTAMP NOT NULL
 	);`
 	if _, err := db.Exec(query); err != nil {
 		return nil, err
@@ -35,8 +35,8 @@ func NewPostgresStore(connStr string) (*PostgresStore, error) {
 }
 
 func (s *PostgresStore) Save(ctx context.Context, stats *pb.SystemStats) error {
-	query := `INSERT INTO system_stats (instance_id, cpu_usage, ram_usage) VALUES ($1, $2, $3)`
-	_, err := s.db.ExecContext(ctx, query, stats.InstanceId, stats.CpuUsage, stats.RamUsage)
+	query := `INSERT INTO system_stats (instance_id, cpu_usage, ram_usage, created_at) VALUES ($1, $2, $3, $4)`
+	_, err := s.db.ExecContext(ctx, query, stats.InstanceId, stats.CpuUsage, stats.RamUsage, stats.CreatedAt)
 	return err
 }
 

@@ -38,6 +38,7 @@ func (h *StreamHub) run() {
 				"cpu_usage":   stats.CpuUsage,
 				"ram_usage":   stats.RamUsage,
 				"instance_id": stats.InstanceId,
+				"created_at":  stats.CreatedAt,
 			})
 			if err != nil {
 				log.Printf("failed to marshal stats: %v", err)
