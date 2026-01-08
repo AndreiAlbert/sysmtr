@@ -52,6 +52,18 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    build:
+      context: .
+      dockerfile: sysmtr-web/Dockerfile
+    container_name: sysmtr_web
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend_server
+    networks:
+      - sysmtr_net
+
 volumes:
   postgres_data:
 
