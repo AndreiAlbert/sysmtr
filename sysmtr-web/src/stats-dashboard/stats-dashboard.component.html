@@ -1,0 +1,21 @@
+<div class="monitor-container">
+  <h2>System Monitoring Dashboard</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Instance ID</th>
+        <th>CPU Usage (%)</th>
+        <th>RAM Usage (%)</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let stat of statsHistory">
+        <td>{{ stat.instance_id }}</td>
+        <td>{{ stat.cpu_usage | number:'1.2-2' }}%</td>
+        <td>{{ stat.ram_usage | number:'1.2-2' }}%</td>
+        <td>{{ stat.created_at || 'Just now' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
